@@ -55,11 +55,15 @@ Here is an example that plots a radiation pattern.
 
 ## Install
 
-    git clone https://github.com/tmolteno/python-necpp.git
-    cd python-necpp
+Install dependencies 
+
+    sudo apt-get install pandoc swig
+
+Compile the wrapper code
+
     git submodule init
     git submodule update --remote
-    cd PyNEC
+    cd PyNECPP 
     ./build.sh
     sudo python setup.py install
 
