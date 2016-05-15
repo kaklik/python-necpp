@@ -14,7 +14,7 @@ class Range(object):
             self.delta = delta
 
 # Setting do_debug to True will dump all the cards generated with context_clean, so you can verify the output more easily in a text editor (and debug that file manually)
-do_debug = False
+do_debug = True
 
 def debug(card, *args):
     if do_debug:
@@ -101,10 +101,10 @@ class context_clean(object):
     def set_extended_thin_wire_kernel(self, enable):
         if enable:
             debug ("EK", 0)
-            self.context.set_extended_thin_wire_kernel(1)
+            self.context.set_extended_thin_wire_kernel(True)
         else:
             debug ("EK", -1)
-            self.context.set_extended_thin_wire_kernel(0)
+            self.context.set_extended_thin_wire_kernel(False)
 
     def geometry_complete(self, ground_plane, current_expansion=True):
         no_ground_plane = 0
@@ -182,3 +182,37 @@ class geometry_clean(object):
         debug("GW", tag_id, nr_segments, src[0], src[1], src[2], dst[0], dst[1], dst[2], radius) # TODO
 
         self.geometry.wire(tag_id, nr_segments, src[0], src[1], src[2], dst[0], dst[1], dst[2], radius, length_ratio, radius_ratio)
+
+    def helix(self, tag_id, nr_segments, spacing, lenght, start_radius, end_radius, wire_radius):
+        """ The helix is a versatile geometry element. For example, to generate a spiral printed circuit antenna, use a helix of zero lenght/height. Lenght could be negative or positive (negative for a left-handed helix) """
+        debug("GH", tag_id, nr_segments, spacing, lenght, start_radius[0], start_radius[1], end_radius[0], end_radius[1], wire_radius)
+
+        self.geometry.helix(tag_id, nr_segments, spacing, lenght, start_radius[0], start_radius[1], end_radius[0], end_radius[1], wire_radius)
+
+
+    # TODO include an option for selecting a structure segment instead of whole structure.
+    def rotate(self, tag_inc, positions):
+        """ Rotates structure along Z-axis to complete a symmetric structure. tag_inc is tag number increment. Positions is total number of times that the structure is to occur in the cylindrical array."""
+        debug("GM", tag_inc, positions, 0, 0, (360.0/positions), 0, 0, 0, 0)
+
+        self.geometry.generate_cylindrical_structure(tag_inc, positions)
+
+    def move(self, rotate_x=0, rotate_y=0, rotate_z=0, move_x=0, move_y=0, move_z=0, segment=0, copies=0, tag_inc=1):
+        """ Move the structure with respect to its coordinate system or reproduces structure in new positions. All coordinates are in meters and angles are in degrees.
+    
+      \param rotate_x The angle in degrees through which the structure is rotated about the X-axis. A positive angle causes a right-hand rotation.  
+      \param rotate_y The angle of rotation about Y-axis.
+      \param rotate_z The angle of rotation about Z-axis.
+      
+      \param move_x The x component of vector by which the structure is translated with respect to the coordinate system.
+      \param move_y The y component of vector by which the structure is translated.
+      \param move_z The z component of vector by which the structure is translated.
+      
+      \param segment The tag number of the segments that will be moved. If its = 0 then the entire structure is moved.
+      \param copies The number of new Structures to be generated.
+      \param tag_inc The tag number increment."""
+        debug("GM", tag_inc, copies, rotate_x, rotate_y, rotate_z, move_x, move_y, move_z, segment)
+
+        self.geometry.move(rotate_x,rotate_y, rotate_z, move_x, move_y, move_z, segment, copies, tag_inc)
+
+
